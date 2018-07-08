@@ -5,7 +5,7 @@ import cv2
 import pandas as pd
 
 # Downloading individual images
-def img_download(keyword, iamge_size = "icon",N = 100):
+def img_download(keyword, image_size = "medium",N = 100):
 	command = "googleimagesdownload -k " + keyword + " -s " + image_size + " -l " + str(N) + " -f jpg"
 	os.system(command)
 
@@ -59,14 +59,14 @@ def square_compression_and_writing_csv(img_list,N,height,width,name_of_csv):
 	pdf.to_csv(name_of_csv)
 
 
-def create_csv(img_list, N,image_size = "medium", height = 4, width = 4, name_of_csv = "data.csv")
+def create_csv(img_list, N,image_size = "medium", height = 4, width = 4, name_of_csv = "data.csv"):
 
 	# img_list    -> Keywords of images to be downloaded from Google Images
 	# N           -> Number of images to be downloaded (N>=1)
 	# image_size  -> Size of images to be downloaded
 	# height      -> Height of compressed image
 	# width       -> Width of compressed image
-	# name_of_csv -> Name of csv file to be saved	
+	# name_of_csv -> Name of csv file to be saved
 
 	try:
 		download(img_list,image_size,N)
