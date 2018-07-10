@@ -6,7 +6,7 @@ import pandas as pd
 
 # Downloading individual images
 def img_download(keyword, image_size = "medium",N = 100):
-	command = "googleimagesdownload -k " + keyword + " -s " + image_size + " -l " + str(N) + " -f jpg"
+	command = "googleimagesdownload -k " + keyword + " -s " + image_size + " -l " + str(N) + " -f jpg" + " --chromedriver /home/arav/Desktop/data/Github/chromedriver_linux64/chromedriver"
 	os.system(command)
 
 # Download function (as an abstraction)
@@ -32,8 +32,11 @@ def names_grab(img):
 
 # Rename downloaded files
 def rename(img_list):
+	dictionary = {}
 	for img in img_list:
+		print(img)
 		list_of_names = names_grab(img)
+		dictionary[img] = len(list_of_names)
 		i = 1
 		for name in list_of_names:
 			command1 = "cd ~/Desktop/data/Github/Project1/downloads/" + img + " && " 
@@ -41,20 +44,27 @@ def rename(img_list):
 			command = command1 + command2
 			os.system(command)
 			i += 1
+	return dictionary
 
 # Compression and writing the image as a CSV file for analysis
-def square_compression_and_writing_csv(img_list,N,height,width,name_of_csv):
+def square_compression_and_writing_csv(img_list,N,height,width,name_of_csv,dictionary):
 	k = 0
 	list_data = []
 	for img in img_list:
-		for i in range(1,N+1):
+		print(img)
+		length = dictionary[img]
+		for i in range(1,length+1):
 			string = "/home/arav/Desktop/data/Github/Project1/downloads/" + img + "/" + str(i) + ".jpg"
 			pic = cv2.imread(string,cv2.IMREAD_COLOR)
-			pic = np.asarray(cv2.resize(pic,(height,width)))
-			pic = np.array(pic.reshape(1,1,-1)[0][0]).tolist()
-			pic.append(img)
-			list_data.append(pic)
-			k += 1
+			print(i)
+			if pic is not None:
+				pic = np.asarray(cv2.resize(pic,(height,width)))
+				pic = np.array(pic.reshape(1,1,-1)[0][0]).tolist()
+				pic.append(img)
+				list_data.append(pic)
+				k += 1
+			else:
+				length -= 1
 	pdf = pd.DataFrame(list_data)
 	pdf.to_csv(name_of_csv)
 
@@ -69,10 +79,10 @@ def create_csv(img_list, N,image_size = "medium", height = 4, width = 4, name_of
 	# name_of_csv -> Name of csv file to be saved
 
 	try:
-		download(img_list,image_size,N)
-		print("\nDownload Successful\n")
-		rename(img_list)
-		pdf = square_compression_and_writing_csv(img_list,N,height,width,name_of_csv)
+		#download(img_list,image_size,N)
+		#print("\nDownload Successful\n")
+		dictionary = rename(img_list)
+		pdf = square_compression_and_writing_csv(img_list,N,height,width,name_of_csv,dictionary)
 	except:
 		print("Error")
 		
